@@ -34,24 +34,24 @@ public class TransactionService {
         }
 
         Transaction newTransaction = new Transaction();
-        transaction.setAmount(transaction.value());
-        transaction.setSender(sender);
-        transaction.setReceiver(reciever);
-        transaction.setTimeStamp(LocalDateTime.now());
+        newTransaction.setAmount(transaction.value());
+        newTransaction.setSender(sender);
+        newTransaction.setReceiver(reciever);
+        newTransaction.setTimeStamp(LocalDateTime.now());
 
         sender.setBalance(sender.getBalance().subtract(transaction.value()));
         reciever.setBalance(reciever.getBalance().add(transaction.value()));
 
 
-        repository.save(newTransaction);
-        userService.saveUser(sender);
-        userService.saveUser(reciever);
+        this.repository.save(newTransaction);
+        this.userService.saveUser(sender);
+        this.userService.saveUser(reciever);
     }
 
 
 
     public boolean authorizeTransaction(User sender, BigDecimal value){
-        ResponseEntity<Map> authorizationEntity = restTemplate.getForEntity("(https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6", Map.class);
+        ResponseEntity<Map> authorizationEntity = restTemplate.getForEntity("https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6", Map.class);
         if(authorizationEntity.getStatusCode() == HttpStatus.OK){
             String message = (String)authorizationEntity.getBody().get("message");
             return "Autorizado".equalsIgnoreCase(message);
