@@ -34,6 +34,4 @@ public class User {
     private UserType userType;
     public User() {
     }
-
-
 }
