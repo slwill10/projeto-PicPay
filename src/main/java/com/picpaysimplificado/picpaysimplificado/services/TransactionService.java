@@ -4,6 +4,7 @@ import com.picpaysimplificado.picpaysimplificado.domain.transaction.Transaction;
 import com.picpaysimplificado.picpaysimplificado.domain.user.User;
 import com.picpaysimplificado.picpaysimplificado.dtos.TransactionDTO;
 import com.picpaysimplificado.picpaysimplificado.repository.TransactionRepository;
+import org.aspectj.bridge.IMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +21,11 @@ public class TransactionService {
     private UserService userService;
     @Autowired
     private TransactionRepository repository;
+    @Autowired
+    private NotificationService notificationService;
     private RestTemplate restTemplate;
 
-    public void createTransaction(TransactionDTO transaction) throws Exception {
+    public Transaction createTransaction(TransactionDTO transaction) throws Exception {
         User sender = this.userService.findByUserId(transaction.senderId());
         User reciever = this.userService.findByUserId(transaction.receiverId());
 
@@ -46,6 +49,12 @@ public class TransactionService {
         this.repository.save(newTransaction);
         this.userService.saveUser(sender);
         this.userService.saveUser(reciever);
+
+
+        this.notificationService.sendNotification(sender, "Transação realizada com sucesso");
+        this.notificationService.sendNotification(reciever, "Transação recebida com sucesso");
+
+        return newTransaction;
     }
 
 
